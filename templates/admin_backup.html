@@ -1,0 +1,20 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="panel">
+    <h2>Database Snapshot</h2>
+    <p class="muted">Current database file size: <strong>{{ file_size_bytes }}</strong> bytes</p>
+    <div class="button-row">
+        <button type="button" class="panel-btn">Create Backup (Next Step)</button>
+        <button type="button" class="panel-btn secondary">Restore Backup (Next Step)</button>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Planned Backup Flow</h2>
+    <ul class="plain-list">
+        <li>Generate timestamped SQLite backup in a `backups/` folder.</li>
+        <li>List available backups with creation time and file size.</li>
+        <li>Restore selected backup after confirmation.</li>
+    </ul>
+</div>
+{% endblock %}

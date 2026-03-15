@@ -1,0 +1,309 @@
+{% extends "admin_base.html" %}
+{% block content %}
+{% if message %}
+<p class="notice">{{ message }}</p>
+{% endif %}
+
+<div class="split-grid">
+    <div class="panel">
+        <h2>Search Employee</h2>
+        <form method="get" action="{{ url_for('employee_management') }}" class="filter-form">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search by code, name, email, department, role"
+            >
+            <div class="button-row">
+                <button type="submit" class="panel-btn">Search</button>
+                <a class="panel-btn secondary link-btn" href="{{ url_for('employee_management') }}">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h2>Add New Employee</h2>
+        <form method="post" action="{{ url_for('add_employee') }}" class="employee-form">
+            <div class="form-grid">
+                <label>
+                    Employee Code
+                    <input type="text" name="emp_code" value="{{ new_emp_code }}" placeholder="EMP008">
+                </label>
+                <label>
+                    Full Name *
+                    <input type="text" name="full_name" required>
+                </label>
+                <label>
+                    Department *
+                    <select name="department_id" required>
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept['id'] }}">{{ dept['dept_name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    Role *
+                    <select name="role_id" required>
+                        <option value="">Select Role</option>
+                        {% for role in roles %}
+                        <option value="{{ role['id'] }}">{{ role['role_name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    Email
+                    <input type="email" name="email" placeholder="name@company.com">
+                </label>
+                <label>
+                    Phone
+                    <input type="text" name="phone" placeholder="9876543210">
+                </label>
+                <label>
+                    Join Date
+                    <input type="date" name="join_date">
+                </label>
+                <label>
+                    Status
+                    <select name="status">
+                        <option value="Active" selected>Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </label>
+            </div>
+            <div class="button-row">
+                <button type="submit" class="panel-btn">Add Employee</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if edit_employee %}
+<div class="panel">
+    <h2>Edit Employee: {{ edit_employee["full_name"] }}</h2>
+    <form method="post" action="{{ url_for('edit_employee', employee_id=edit_employee['id']) }}" class="employee-form">
+        <div class="form-grid">
+            <label>
+                Employee Code
+                <input type="text" value="{{ edit_employee['emp_code'] }}" disabled>
+            </label>
+            <label>
+                Full Name *
+                <input type="text" name="full_name" value="{{ edit_employee['full_name'] }}" required>
+            </label>
+            <label>
+                Department *
+                <select name="department_id" required>
+                    {% for dept in departments %}
+                    <option
+                        value="{{ dept['id'] }}"
+                        {% if dept['id'] == edit_employee['department_id'] %}selected{% endif %}
+                    >
+                        {{ dept['dept_name'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Role *
+                <select name="role_id" required>
+                    {% for role in roles %}
+                    <option
+                        value="{{ role['id'] }}"
+                        {% if role['id'] == edit_employee['role_id'] %}selected{% endif %}
+                    >
+                        {{ role['role_name'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Email
+                <input type="email" name="email" value="{{ edit_employee['email'] or '' }}">
+            </label>
+            <label>
+                Phone
+                <input type="text" name="phone" value="{{ edit_employee['phone'] or '' }}">
+            </label>
+            <label>
+                Join Date
+                <input type="date" name="join_date" value="{{ edit_employee['join_date'] or '' }}">
+            </label>
+            <label>
+                Status
+                <select name="status">
+                    <option value="Active" {% if (edit_employee['status'] or '')|lower == 'active' %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if (edit_employee['status'] or '')|lower == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </label>
+        </div>
+        <div class="button-row">
+            <button type="submit" class="panel-btn">Save Changes</button>
+            <a class="panel-btn secondary link-btn" href="{{ url_for('employee_management', q=query) }}">Cancel Edit</a>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div class="panel">
+    <div class="list-panel-head">
+        <h2>View Employee List</h2>
+        <div class="button-row compact">
+            <button type="button" class="panel-btn secondary" id="openEmployeeSearchBtn">Search</button>
+            <button type="button" class="panel-btn" id="openEmployeeListBtn">Open Full List</button>
+        </div>
+    </div>
+    <p class="muted">Showing a short preview. Click "Open Full List" to view all employees in a searchable scroll box.</p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Emp Code</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in employees[:5] %}
+                <tr>
+                    <td>{{ row["emp_code"] }}</td>
+                    <td>{{ row["full_name"] }}</td>
+                    <td>{{ row["dept_name"] or "N/A" }}</td>
+                    <td>{{ row["role_name"] or "N/A" }}</td>
+                    <td><span class="badge">{{ row["status"] }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No employee records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="list-modal" id="employeeListModal">
+    <div class="list-modal-box">
+        <div class="list-modal-head no-title">
+            <button type="button" class="close-modal-btn" id="closeEmployeeListBtn">X</button>
+        </div>
+        <input
+            type="text"
+            id="employeeListSearch"
+            class="list-search-input"
+            placeholder="Search inside list by code, name, department, role, email..."
+        >
+        <div class="list-scroll-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Emp Code</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Join Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeModalRows">
+                    {% for row in employees %}
+                    <tr class="full-list-row">
+                        <td>{{ row["emp_code"] }}</td>
+                        <td>{{ row["full_name"] }}</td>
+                        <td>{{ row["dept_name"] or "N/A" }}</td>
+                        <td>{{ row["role_name"] or "N/A" }}</td>
+                        <td>{{ row["email"] or "N/A" }}</td>
+                        <td>{{ row["phone"] or "N/A" }}</td>
+                        <td>{{ row["join_date"] or "N/A" }}</td>
+                        <td><span class="badge">{{ row["status"] }}</span></td>
+                        <td class="action-cell">
+                            <a class="row-btn" href="{{ url_for('employee_management', edit_id=row['id'], q=query) }}">Edit</a>
+                            {% if (row["status"] or "")|lower != "inactive" %}
+                            <form
+                                method="post"
+                                action="{{ url_for('deactivate_employee', employee_id=row['id']) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Deactivate this employee?');"
+                            >
+                                <input type="hidden" name="q" value="{{ query }}">
+                                <button type="submit" class="row-btn danger">Deactivate</button>
+                            </form>
+                            {% else %}
+                            <span class="row-note">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="noEmployeeMatchRow" style="display: none;">
+                        <td colspan="9">No employees match your search.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const modal = document.getElementById("employeeListModal");
+        const openBtn = document.getElementById("openEmployeeListBtn");
+        const openSearchBtn = document.getElementById("openEmployeeSearchBtn");
+        const closeBtn = document.getElementById("closeEmployeeListBtn");
+        const searchInput = document.getElementById("employeeListSearch");
+        const rows = Array.from(document.querySelectorAll(".full-list-row"));
+        const noMatchRow = document.getElementById("noEmployeeMatchRow");
+
+        function openModal() {
+            modal.classList.add("show");
+            document.body.classList.add("modal-open");
+            searchInput.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove("show");
+            document.body.classList.remove("modal-open");
+        }
+
+        function filterRows() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach((row) => {
+                const text = row.textContent.toLowerCase();
+                const visible = text.includes(keyword);
+                row.style.display = visible ? "" : "none";
+                if (visible) {
+                    visibleCount += 1;
+                }
+            });
+
+            noMatchRow.style.display = visibleCount === 0 ? "" : "none";
+        }
+
+        openBtn.addEventListener("click", openModal);
+        openSearchBtn.addEventListener("click", function () {
+            openModal();
+            searchInput.select();
+        });
+        closeBtn.addEventListener("click", closeModal);
+        searchInput.addEventListener("input", filterRows);
+
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && modal.classList.contains("show")) {
+                closeModal();
+            }
+        });
+    })();
+</script>
+{% endblock %}

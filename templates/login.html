@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>omkar.com</title>
+</head>
+<body>
+    <div id="full_body">
+        <div class="left">
+            <div id="moto">
+                <p id="para1">
+                    Manage Your Business
+                </p>
+
+                <p id="para2">
+                    Smart attendance and workforce management built for modern teams.
+Automate check-ins, streamline leave approvals, and gain real-time visibility — all in one system. 
+                </p>
+                <p id="image">
+                    <img src="{{ url_for('static', filename='images/Team work-bro.png') }}" alt="images showing team are working">
+                </p>
+            </div>
+        </div>
+        <div class="right">
+            <div id="header">
+                <p id="paragraph1">
+                    Login To Your Account
+                </p>
+                <p id="paragraph2">
+                    Enter your details to login 
+                </p>
+            </div>
+            <div id="body">
+                <span id="mail">EMAIL ADDRESS</span>
+                <input type="email" name="email" id="email" placeholder="Enter your Email">
+
+                <span id="mail">PASSWORD</span>
+                <input type="password" name="password" id="password" placeholder="Enter password">
+
+                <input type="button" value="LOGIN" name="LOGIN" onclick="window.location.href='{{ url_for('admin_home') }}'">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

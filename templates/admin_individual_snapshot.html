@@ -1,0 +1,61 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="panel">
+    <div class="list-panel-head">
+        <h2>Employee-Wise Attendance Totals</h2>
+        <a class="panel-btn secondary link-btn" href="{{ url_for('leave_management') }}">Back To Leave Page</a>
+    </div>
+    <p class="muted">Red flag: 3+ total late marks and 3+ total leave days. Orange flag: 3+ total leave days. Yellow card: 3+ continuous half-days.</p>
+    <form method="get" action="{{ url_for('individual_attendance_snapshot') }}" class="attendance-filter">
+        <label>
+            Search Employee Name
+            <input type="text" name="q" value="{{ query }}" placeholder="Type employee name">
+        </label>
+        <button type="submit" class="panel-btn">Search</button>
+        {% if query %}
+        <a class="panel-btn secondary link-btn" href="{{ url_for('individual_attendance_snapshot') }}">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="employee-snapshot-grid">
+    {% for person in employee_cards %}
+    <article class="employee-snapshot-card {% if person['red_flag'] %}red{% elif person['orange_flag'] %}orange{% elif person['yellow_card'] %}warning{% endif %}">
+        <div class="employee-snapshot-head">
+            <h3>{{ person["full_name"] }}</h3>
+            {% if person["red_flag"] %}
+            <span class="red-flag-pill">RED FLAG</span>
+            {% elif person["orange_flag"] %}
+            <span class="orange-flag-pill">ORANGE FLAG</span>
+            {% elif person["yellow_card"] %}
+            <span class="yellow-card-pill">YELLOW CARD</span>
+            {% endif %}
+        </div>
+        <p class="employee-snapshot-meta">{{ person["emp_code"] }} | {{ person["dept_name"] }}</p>
+        <div class="employee-snapshot-stats">
+            <div>
+                <span>Total Present</span>
+                <strong>{{ person["total_present"] }}</strong>
+            </div>
+            <div>
+                <span>Total Absent</span>
+                <strong class="stat-absent">{{ person["total_absent"] }}</strong>
+            </div>
+            <div>
+                <span>Total Leave</span>
+                <strong>{{ person["total_leave_days"] }}</strong>
+            </div>
+            <div>
+                <span>Total Late Marks</span>
+                <strong>{{ person["total_late_days"] }}</strong>
+            </div>
+        </div>
+        <p class="employee-snapshot-note">Continuous Half-Day Streak: {{ person["max_half_day_streak"] }}</p>
+    </article>
+    {% else %}
+    <div class="panel">
+        <p class="muted">No employee data found.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

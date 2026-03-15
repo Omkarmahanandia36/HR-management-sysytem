@@ -1,0 +1,47 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="metric-grid">
+    <article class="metric-card">
+        <p class="metric-label">Total Employees</p>
+        <p class="metric-value">{{ total_employees }}</p>
+    </article>
+    <article class="metric-card">
+        <p class="metric-label">Present Today</p>
+        <p class="metric-value">{{ present_today }}</p>
+    </article>
+    <article class="metric-card">
+        <p class="metric-label">Late Today</p>
+        <p class="metric-value">{{ late_today }}</p>
+    </article>
+    <article class="metric-card">
+        <p class="metric-label">On Leave</p>
+        <p class="metric-value">{{ on_leave_today }}</p>
+    </article>
+    <article class="metric-card">
+        <p class="metric-label">Absent</p>
+        <p class="metric-value">{{ absent_today }}</p>
+    </article>
+    <article class="metric-card">
+        <p class="metric-label">Pending Leave</p>
+        <p class="metric-value">{{ pending_leaves }}</p>
+    </article>
+</div>
+
+<div class="split-grid">
+    <div class="panel">
+        <h2>Recent Activity Log</h2>
+        <ul class="activity-list">
+            {% for row in recent_activity %}
+            <li>
+                <p class="activity-action">{{ row["action"] }}</p>
+                <p class="activity-meta">{{ row["actor_name"] }} | {{ row["timestamp"] }}</p>
+            </li>
+            {% else %}
+            <li>
+                <p class="activity-action">No activity available.</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

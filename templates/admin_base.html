@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="admin-shell">
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <p class="brand-title">HR Admin</p>
+                <p class="brand-subtitle">Control Center</p>
+            </div>
+
+            <nav class="menu">
+                <a class="menu-link {% if section == 'dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">1. Dashboard</a>
+                <a class="menu-link {% if section == 'employees' %}active{% endif %}" href="{{ url_for('employee_management') }}">2. Employee Management</a>
+                <a class="menu-link {% if section == 'attendance' %}active{% endif %}" href="{{ url_for('attendance_management') }}">3. Attendance Management</a>
+                <a class="menu-link {% if section == 'leaves' %}active{% endif %}" href="{{ url_for('leave_management') }}">4. Leave Management</a>
+                <a class="menu-link {% if section == 'reports' %}active{% endif %}" href="{{ url_for('reports') }}">5. Reports</a>
+                <a class="menu-link {% if section == 'settings' %}active{% endif %}" href="{{ url_for('system_settings') }}">6. System Settings</a>
+                <a class="menu-link {% if section == 'logs' %}active{% endif %}" href="{{ url_for('activity_logs') }}">7. Activity Logs</a>
+                <a class="menu-link {% if section == 'backup' %}active{% endif %}" href="{{ url_for('backup_restore') }}">8. Backup and Restore</a>
+                <a class="menu-link danger" href="{{ url_for('logout') }}">9. Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <h1>{{ page_title }}</h1>
+                <p>{{ page_subtitle }}</p>
+            </header>
+
+            <section class="content-surface">
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

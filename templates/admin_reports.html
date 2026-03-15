@@ -1,0 +1,56 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="split-grid">
+    <div class="panel">
+        <h2>Employees by Department</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Employee Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in department_summary %}
+                    <tr>
+                        <td>{{ row["dept_name"] }}</td>
+                        <td>{{ row["employee_count"] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2">No department data.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Leave Status Summary</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in leave_status_summary %}
+                    <tr>
+                        <td>{{ row["status"] }}</td>
+                        <td>{{ row["total"] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2">No leave data.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

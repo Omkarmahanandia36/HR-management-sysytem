@@ -1,0 +1,30 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="split-grid">
+    <div class="panel">
+        <h2>Attendance Policy</h2>
+        <ul class="plain-list">
+            <li>Workday Start Time: 09:30M</li>
+            <li>Late Mark Threshold: 09:40 AM</li>
+            <li>Maximum Work Hours: 9.0 Hours </li>
+        </ul>
+    </div>
+
+    <div class="panel">
+        <h2>Leave Policy</h2>
+        <ul class="plain-list">
+            <li>Casual Leave: 12 days per year</li>
+            <li>Sick Leave: 10 days per year</li>
+            <li>Approver Flow:Team Manager ->HR-> Admin</li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>System Notes</h2>
+    <p class="muted">
+        This is the starter settings module. We can next add editable forms for roles, policies,
+        shift timing, and notification configuration.
+    </p>
+</div>
+{% endblock %}

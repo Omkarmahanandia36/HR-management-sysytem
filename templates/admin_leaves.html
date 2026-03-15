@@ -1,0 +1,169 @@
+{% extends "admin_base.html" %}
+{% block content %}
+{% if message %}
+<p class="notice">{{ message }}</p>
+{% endif %}
+
+<div class="panel">
+    <a class="snapshot-nav-card" href="{{ url_for('individual_attendance_snapshot') }}">
+        <h2>Leave + Attendance Snapshot</h2>
+        <p>Click to open individual cards with total present/absent and yellow-card alerts.</p>
+    </a>
+
+    <h2>Department Snapshot ({{ selected_date }})</h2>
+    <form method="get" action="{{ url_for('leave_management') }}" class="attendance-filter">
+        <label>
+            Filter By Date
+            <input type="date" name="date" value="{{ selected_date }}">
+        </label>
+        {% if selected_department_id is not none %}
+        <input type="hidden" name="dept_detail" value="{{ selected_department_id }}">
+        {% endif %}
+        <button type="submit" class="panel-btn">Apply Filter</button>
+    </form>
+
+    <div class="dept-card-grid">
+        {% for dept in department_cards %}
+        <a
+            class="dept-card {% if selected_department and selected_department['department_id'] == dept['department_id'] %}active{% endif %}"
+            href="{{ url_for('leave_management', date=selected_date, dept_detail=dept['department_id']) }}"
+        >
+            <div class="dept-card-head">
+                <h3>{{ dept["dept_name"] }}</h3>
+                {% if dept["new_request_count"] %}
+                <span class="new-request-pill">{{ dept["new_request_count"] }} New</span>
+                {% endif %}
+            </div>
+            <p class="dept-card-meta">Team Size: {{ dept["total_members"] }}</p>
+            <div class="dept-card-stats">
+                <div>
+                    <span>Present</span>
+                    <strong>{{ dept["present_count"] }}</strong>
+                </div>
+                <div>
+                    <span>Absent</span>
+                    <strong class="stat-absent">{{ dept["absent_count"] }}</strong>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <p class="muted">No department attendance data found for this date.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% if selected_department %}
+<div class="panel">
+    <h2>Absent Employees - {{ selected_department["dept_name"] }} ({{ selected_date }})</h2>
+    <p class="muted">Red means latest leave request is new/pending.</p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Emp Code</th>
+                    <th>Name</th>
+                    <th>Attendance Status</th>
+                    <th>Leave Request Status</th>
+                    <th>Applied On</th>
+                    <th>Notification</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in selected_department["absent_employees"] %}
+                <tr>
+                    <td>{{ person["emp_code"] }}</td>
+                    <td>{{ person["full_name"] }}</td>
+                    <td><span class="badge">{{ person["attendance_status"] }}</span></td>
+                    <td>
+                        <span class="badge {% if person['is_new_request'] %}badge-alert{% endif %}">
+                            {{ person["leave_request_status"] }}
+                        </span>
+                        {% if person["leave_request_window"] %}
+                        <p class="row-note">Leave Dates: {{ person["leave_request_window"] }}</p>
+                        {% endif %}
+                    </td>
+                    <td>{{ person["leave_request_applied_on"] or "-" }}</td>
+                    <td>
+                        {% if person["is_new_request"] %}
+                        <span class="red-dot"></span> New Request
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No absent employees in this department for this date.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="panel">
+    <h2>Leave Requests</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Applicant Name</th>
+                    <th>Leave Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>Applied On</th>
+                    <th>Reason</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in leave_requests %}
+                <tr>
+                    <td>#{{ row["id"] }}</td>
+                    <td>{{ row["applicant_name"] or "N/A" }}</td>
+                    <td>{{ row["leave_type"] }}</td>
+                    <td>{{ row["from_date"] }}</td>
+                    <td>{{ row["to_date"] }}</td>
+                    <td>{{ row["days"] }}</td>
+                    <td>
+                        {% set status_key = (row["status"] or "")|trim|lower %}
+                        {% if status_key in ["pending", "new", "new request"] %}
+                        <form method="post" action="{{ url_for('approve_leave_request', leave_id=row['id']) }}" class="inline-form">
+                            <input type="hidden" name="date" value="{{ selected_date }}">
+                            <input type="hidden" name="dept_detail" value="{{ selected_department_id or '' }}">
+                            <button type="submit" class="badge badge-alert badge-btn" title="Click to approve this leave request">
+                                {{ row["status"] }}
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="badge">{{ row["status"] }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row["applied_on"] }}</td>
+                    <td>{{ row["reason"] }}</td>
+                    <td>
+                        {% if status_key in ["pending", "new", "new request"] %}
+                        <form method="post" action="{{ url_for('approve_leave_request', leave_id=row['id']) }}" class="inline-form">
+                            <input type="hidden" name="date" value="{{ selected_date }}">
+                            <input type="hidden" name="dept_detail" value="{{ selected_department_id or '' }}">
+                            <button type="submit" class="row-btn">Approve</button>
+                        </form>
+                        {% else %}
+                        <span class="row-note">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10">No leave requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
