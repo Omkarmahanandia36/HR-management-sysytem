@@ -1,0 +1,52 @@
+{% extends "employee_base.html" %}
+{% block content %}
+<div class="employee-hero-card" style="padding: 1.5rem; margin-bottom: 1rem; border-left: 5px solid #17324d;">
+    <div>
+        <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem; color: #17324d;">Official Company Policy</h2>
+        <p style="margin: 0; color: #64748b; line-height: 1.6;">Please read and understand the rules regarding attendance, leaves, and daily workflows below.</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+    <!-- Attendance Policy -->
+    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <h3 style="margin-top: 0; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 1rem;">⏱️ Working Hours</h3>
+        <ul style="list-style: none; padding: 0; margin: 0; color: #475569; line-height: 1.8;">
+            <li><strong>Standard Shift:</strong> {{ settings['workday_start_time'] }} to {{ settings['logout_time'] }}</li>
+            <li><strong>Maximum Expected Work Hours:</strong> {{ settings['maximum_work_hours'] }} hours/day</li>
+            <li><strong>Late Mark Threshold:</strong> Arriving after {{ settings['late_mark_threshold'] }} will incur a late mark.</li>
+            <li><strong>Check-In Location:</strong> Must be within {{ settings['geofence_radius_meters'] }} meters of the office location.</li>
+        </ul>
+    </div>
+
+    <!-- Leave Policy -->
+    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <h3 style="margin-top: 0; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 1rem;">🌴 Leave Allowances</h3>
+        <ul style="list-style: none; padding: 0; margin: 0; color: #475569; line-height: 1.8;">
+            <li><strong>Casual Leaves:</strong> {{ settings['casual_leave_days'] }} days per year</li>
+            <li><strong>Sick Leaves:</strong> {{ settings['sick_leave_days'] }} days per year</li>
+            <li>Leaves must be requested through the portal and approved by HR.</li>
+            <li>Unapproved absences are marked as <strong>Absent</strong> automatically at the end of the day.</li>
+        </ul>
+    </div>
+
+    <!-- Disciplinary / Flag Policy -->
+    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); grid-column: 1 / -1;">
+        <h3 style="margin-top: 0; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 1rem;">⚠️ Disciplinary Flags</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; color: #475569; line-height: 1.6;">
+            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                <span style="flex-shrink: 0;">🔴</span>
+                <span><strong>Red Flag:</strong> Given when an employee has (3 or more total leave days OR 3 or more absent days) AND 3 or more total late marks in a month. This represents a combination of frequent absences and frequent tardiness.</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                <span style="flex-shrink: 0;">🟠</span>
+                <span><strong>Orange Flag:</strong> Given when an employee has 3 or more total leave days in a month, but does not have enough late marks to trigger the Red Flag.</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                <span style="flex-shrink: 0;">🟡</span>
+                <span><strong>Yellow Flag:</strong> Given when an employee has a streak of 3 or more continuous half-days.</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

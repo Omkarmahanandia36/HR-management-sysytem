@@ -4,9 +4,66 @@
 <p class="notice">{{ message }}</p>
 {% endif %}
 
-<div class="panel">
+<style>
+    .settings-card {
+        background: #fff;
+        border: 1px solid #e0e4e8;
+        border-radius: 8px;
+        padding: 1.75rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .settings-card:hover {
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        transform: translateY(-2px);
+    }
+    .settings-card h2 {
+        margin-top: 0;
+        font-size: 1.35rem;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+    .settings-card p.desc {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 1.75rem;
+        border-bottom: 1px solid #f1f3f5;
+        padding-bottom: 1rem;
+    }
+    .custom-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .custom-input-group label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #495057;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .custom-input-group input, .custom-input-group select {
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 1rem;
+        color: #212529;
+        transition: all 0.2s ease-in-out;
+        background-color: #f8f9fa;
+        font-family: inherit;
+    }
+    .custom-input-group input:focus, .custom-input-group select:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        background-color: #fff;
+    }
+</style>
+
+<div class="settings-card" style="border-top: 4px solid #007bff;">
     <div class="attendance-head">
-        <h2>Attendance Views</h2>
+        <h2 style="margin: 0;">Attendance Views</h2>
         <div class="tab-row">
             <a
                 href="{{ url_for('attendance_management', view='daily', date=selected_date, month=selected_month) }}"
@@ -23,53 +80,52 @@
         </div>
     </div>
 
-    <form method="get" action="{{ url_for('attendance_management') }}" class="attendance-filter">
+    <form method="get" action="{{ url_for('attendance_management') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-top: 1rem;">
         <input type="hidden" name="view" value="{{ view_mode }}">
         {% if view_mode == "daily" %}
-        <label>
-            Filter By Date
+        <div class="custom-input-group" style="flex: 1; min-width: 200px;">
+            <label>Filter By Date</label>
             <input type="date" name="date" value="{{ selected_date }}">
-        </label>
+        </div>
         <input type="hidden" name="month" value="{{ selected_month }}">
         {% else %}
-        <label>
-            Filter By Month
+        <div class="custom-input-group" style="flex: 1; min-width: 200px;">
+            <label>Filter By Month</label>
             <input type="month" name="month" value="{{ selected_month }}">
-        </label>
+        </div>
         <input type="hidden" name="date" value="{{ selected_date }}">
         {% endif %}
-        <button type="submit" class="panel-btn">Apply Filter</button>
+        <button type="submit" class="panel-btn" style="padding: 0.85rem 1.5rem; font-size: 1rem; height: 100%;">Apply Filter</button>
     </form>
 </div>
 
+{% if view_mode == "daily" %}
 <div class="split-grid">
-    <div class="panel">
-        <h2>Daily Attendance Graph ({{ selected_date }})</h2>
-        <p class="muted">Present vs Leave vs Absent vs Holiday.</p>
+    <div class="settings-card" style="border-top: 4px solid #6f42c1; padding: 1.5rem;">
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.25rem;">Daily Attendance Graph ({{ selected_date }})</h2>
+        <p class="desc" style="margin-bottom: 1rem;">Present vs Leave vs Absent vs Holiday.</p>
         <canvas id="dailyAttendanceChart" class="chart-canvas"></canvas>
     </div>
 
-    <div class="panel">
-        <h2>Monthly Attendance Graph ({{ selected_month }})</h2>
-        <p class="muted">Date-wise attendance trend for present, leave, and absent.</p>
+    <div class="settings-card" style="border-top: 4px solid #17a2b8; padding: 1.5rem;">
+        <h2 style="font-size: 1.15rem; margin-bottom: 0.25rem;">Monthly Attendance Graph ({{ selected_month }})</h2>
+        <p class="desc" style="margin-bottom: 1rem;">Date-wise attendance trend for present, leave, and absent.</p>
         <canvas id="monthlyAttendanceChart" class="chart-canvas"></canvas>
     </div>
 </div>
 
-{% if view_mode == "daily" %}
-<div class="panel">
+<div class="settings-card" style="border-top: 4px solid #28a745;">
     <h2>Daily Attendance ({{ selected_date }})</h2>
-    <p class="muted">Includes late flag and work hours for each employee.</p>
-    <div class="table-wrap">
-        <table>
-            <thead>
+    <p class="desc">Includes late flag and work hours for each employee.</p>
+    <div class="table-wrap" style="max-height: 400px; overflow-y: auto; border: 1px solid #e0e4e8; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse; margin: 0;">
+            <thead style="position: sticky; top: 0; background: #f3f7fb; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
                 <tr>
                     <th>Emp Code</th>
                     <th>Name</th>
                     <th>Check In</th>
                     <th>Check Out</th>
                     <th>Work Hours</th>
-                    <th>Break Hours</th>
                     <th>Status</th>
                     <th>Late Flag</th>
                     <th>Action</th>
@@ -83,13 +139,12 @@
                     <td>{{ row["check_in"] or "-" }}</td>
                     <td>{{ row["check_out"] or "-" }}</td>
                     <td>{{ row["work_hours"] }}</td>
-                    <td>{{ row["break_hours"] }}</td>
                     <td><span class="badge">{{ row["status"] }}</span></td>
                     <td>{{ "Yes" if row["late_flag"] else "No" }}</td>
                     <td>
                         <a
                             class="row-btn"
-                            href="{{ url_for('attendance_management', view='daily', date=selected_date, month=selected_month, override_id=row['id']) }}"
+                            href="{{ url_for('attendance_management', view='daily', date=selected_date, month=selected_month, override_id=row['id']) }}#override-section"
                         >
                             Override
                         </a>
@@ -97,7 +152,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="9">No attendance records for this date.</td>
+                    <td colspan="8">No attendance records for this date.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -106,9 +161,9 @@
 </div>
 
 {% if override_row %}
-<div class="panel">
+<div id="override-section" class="settings-card" style="border-top: 4px solid #fd7e14;">
     <h2>Manual Override (Rare Cases)</h2>
-    <p class="muted">
+    <p class="desc">
         Editing record for <strong>{{ override_row["full_name"] }}</strong> ({{ override_row["emp_code"] }}) on {{ override_row["date"] }}.
     </p>
     <form method="post" action="{{ url_for('override_attendance', attendance_id=override_row['id']) }}" class="employee-form">
@@ -116,55 +171,50 @@
         <input type="hidden" name="date" value="{{ selected_date }}">
         <input type="hidden" name="month" value="{{ selected_month }}">
 
-        <div class="form-grid">
-            <label>
-                Status
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="custom-input-group">
+                <label>Status</label>
                 <select name="status">
                     <option value="Present" {% if (override_row["status"] or "")|lower == "present" %}selected{% endif %}>Present</option>
                     <option value="Absent" {% if (override_row["status"] or "")|lower == "absent" %}selected{% endif %}>Absent</option>
                     <option value="Leave" {% if (override_row["status"] or "")|lower == "leave" %}selected{% endif %}>Leave</option>
                     <option value="Holiday" {% if (override_row["status"] or "")|lower == "holiday" %}selected{% endif %}>Holiday</option>
                 </select>
-            </label>
-            <label>
-                Check In
+            </div>
+            <div class="custom-input-group">
+                <label>Check In</label>
                 <input type="time" name="check_in" value="{{ override_row['check_in'] or '' }}">
-            </label>
-            <label>
-                Check Out
+            </div>
+            <div class="custom-input-group">
+                <label>Check Out</label>
                 <input type="time" name="check_out" value="{{ override_row['check_out'] or '' }}">
-            </label>
-            <label>
-                Work Hours
+            </div>
+            <div class="custom-input-group">
+                <label>Work Hours</label>
                 <input type="number" name="work_hours" step="0.01" min="0" value="{{ override_row['work_hours'] }}">
-            </label>
-            <label>
-                Break Hours
-                <input type="number" name="break_hours" step="0.01" min="0" value="{{ override_row['break_hours'] }}">
-            </label>
-            <label>
-                Late Flag
+            </div>
+            <div class="custom-input-group">
+                <label>Late Flag</label>
                 <select name="late_flag">
                     <option value="0" {% if not override_row['late_flag'] %}selected{% endif %}>No</option>
                     <option value="1" {% if override_row['late_flag'] %}selected{% endif %}>Yes</option>
                 </select>
-            </label>
         </div>
 
-        <div class="button-row">
-            <button type="submit" class="panel-btn">Save Override</button>
-            <a class="panel-btn secondary link-btn" href="{{ url_for('attendance_management', view='daily', date=selected_date, month=selected_month) }}">Cancel</a>
+        <div class="button-row" style="margin-top: 1.5rem;">
+            <button type="submit" class="panel-btn" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Save Override</button>
+            <a class="panel-btn secondary link-btn" style="padding: 0.75rem 1.5rem; font-size: 1rem; display: inline-flex; align-items: center;" href="{{ url_for('attendance_management', view='daily', date=selected_date, month=selected_month) }}">Cancel</a>
         </div>
     </form>
 </div>
 {% endif %}
 {% else %}
-<div class="panel">
+<div class="settings-card" style="border-top: 4px solid #28a745;">
     <h2>Monthly Attendance Summary ({{ selected_month }})</h2>
-    <p class="muted">Manual override is available in Daily Attendance view.</p>
-    <div class="table-wrap">
-        <table>
-            <thead>
+    <p class="desc">Manual override is available in Daily Attendance view.</p>
+    <div class="table-wrap" style="max-height: 400px; overflow-y: auto; border: 1px solid #e0e4e8; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse; margin: 0;">
+            <thead style="position: sticky; top: 0; background: #f3f7fb; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
                 <tr>
                     <th>Emp Code</th>
                     <th>Name</th>
@@ -172,7 +222,6 @@
                     <th>Leave Days</th>
                     <th>Absent Days</th>
                     <th>Late Days</th>
-                    <th>Total Work Hours</th>
                 </tr>
             </thead>
             <tbody>
@@ -184,11 +233,10 @@
                     <td>{{ row["leave_days"] }}</td>
                     <td>{{ row["absent_days"] }}</td>
                     <td>{{ row["late_days"] }}</td>
-                    <td>{{ row["total_work_hours"] }}</td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7">No monthly attendance data found.</td>
+                    <td colspan="6">No monthly attendance data found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

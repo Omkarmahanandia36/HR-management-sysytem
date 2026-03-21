@@ -1,0 +1,75 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<style>
+    .settings-card {
+        background: #fff;
+        border: 1px solid #e0e4e8;
+        border-radius: 8px;
+        padding: 1.75rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        margin-bottom: 1.5rem;
+    }
+    .policy-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+    .policy-box {
+        background: #f8f9fa;
+        border: 2px dashed #ced4da;
+        border-radius: 8px;
+        padding: 2.5rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .policy-box:hover {
+        background: #eef2f5;
+        border-color: #007bff;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,123,255,0.1);
+    }
+    .policy-box h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    .policy-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+</style>
+
+<div class="settings-card" style="border-top: 4px solid #17a2b8;">
+    <h2 style="margin-top: 0; color: #2c3e50; font-size: 1.35rem;">Company Policies</h2>
+    <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1.75rem; border-bottom: 1px solid #f1f3f5; padding-bottom: 1rem;">Select a policy category to view or manage its details.</p>
+    
+    <div class="policy-grid">
+        <div class="policy-box" onclick="window.location.href='{{ url_for('admin_policy_detail', policy_type='employee') }}';">
+            <div class="policy-icon">👥</div>
+            <h3>Employee Policy</h3>
+        </div>
+        <div class="policy-box" onclick="window.location.href='{{ url_for('admin_policy_detail', policy_type='hr') }}';">
+            <div class="policy-icon">💼</div>
+            <h3>HR Policy</h3>
+        </div>
+        <div class="policy-box" onclick="window.location.href='{{ url_for('admin_policy_detail', policy_type='on-boarding') }}';">
+            <div class="policy-icon">🚀</div>
+            <h3>On-boarding Policy</h3>
+        </div>
+        <div class="policy-box" onclick="window.location.href='{{ url_for('admin_policy_detail', policy_type='termination') }}';">
+            <div class="policy-icon">👋</div>
+            <h3>Termination Policy</h3>
+        </div>
+        <div class="policy-box" onclick="window.location.href='{{ url_for('admin_policy_detail', policy_type='leave') }}';">
+            <div class="policy-icon">🌴</div>
+            <h3>Leave Policy</h3>
+        </div>
+    </div>
+</div>
+{% endblock %}

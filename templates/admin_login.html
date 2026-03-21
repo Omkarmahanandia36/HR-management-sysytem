@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Sign In | Oditech Global</title>
+    <title>Admin Sign In | Workspace</title>
     <!-- Import a premium modern font -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -178,7 +178,7 @@
 
     <script>
         // Mark this specific browser tab as an authorized session
-        sessionStorage.setItem('employee_tab_session', 'active');
+        sessionStorage.setItem('admin_tab_session', 'active');
     </script>
 
     <div class="login-container">
@@ -189,7 +189,7 @@
             
             <div class="header">
                 <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;">Oditech Global Pvt. Ltd.</div>
-                <h1>Employee Portal</h1>
+                <h1>Admin Workspace</h1>
                 <p>Enter your credentials to continue</p>
             </div>
 
@@ -204,10 +204,10 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('admin_login') }}">
                 <div class="form-group">
-                    <label class="form-label" for="login_id">Work Email or Employee Code</label>
-                    <input type="text" id="login_id" name="login_id" class="form-input" value="{{ login_id }}" placeholder="EMP001 or name@company.com" required autocomplete="username">
+                    <label class="form-label" for="email">Work Email</label>
+                    <input type="email" id="email" name="email" class="form-input" value="{{ email }}" placeholder="admin@company.com" required autocomplete="email">
                 </div>
 
                 <div class="form-group">
@@ -215,7 +215,7 @@
                     <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
                 </div>
 
-                <button type="submit" class="submit-btn">Sign In to Portal</button>
+                <button type="submit" class="submit-btn">Sign In to Dashboard</button>
             </form>
         </div>
         <div class="footer-text">
