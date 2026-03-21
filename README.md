@@ -74,16 +74,18 @@ Upon initializing the database for the first time, a default administrator accou
 
 The SQLite database (`company.db`) consists of several interconnected tables mapped to the system's logic:
 
-- **`employees`**: Core employee profile details (`emp_code`, `full_name`, `department_id`, `role_id`, `status`, `profile_image`, etc.)
-- **`users`**: Employee portal login credentials, hashed passwords, and session data.
-- **`admin_users`**: Administrator login credentials and profiles.
-- **`departments` & `roles`**: Lookup tables defining the organizational structure.
-- **`attendance`**: Daily check-in/out records, work hours, late flags, and attendance statuses.
-- **`leave_requests`**: Employee leave applications, date ranges, reasons, and admin approval tracking.
-- **`employee_hourly_notes`**: Logs of task descriptions submitted by employees throughout their workday.
-- **`activity_logs`**: System-wide audit trail recording actions taken by both admins and employees (along with timestamps and IP addresses).
-- **`system_settings`**: Global dynamic configuration (e.g., office geolocation, leave limits, workday timings).
-- **`notifications`**: Published office announcements, alerts, and holiday closures.
+| Table Name | Description |
+| :--- | :--- |
+| **`employees`** | Core employee profile details (`emp_code`, `full_name`, `department_id`, `role_id`, `status`, `profile_image`, etc.) |
+| **`users`** | Employee portal login credentials, hashed passwords, and session data. |
+| **`admin_users`** | Administrator login credentials and profiles. |
+| **`departments`** & **`roles`** | Lookup tables defining the organizational structure. |
+| **`attendance`** | Daily check-in/out records, work hours, late flags, and attendance statuses. |
+| **`leave_requests`** | Employee leave applications, date ranges, reasons, and admin approval tracking. |
+| **`employee_hourly_notes`** | Logs of task descriptions submitted by employees throughout their workday. |
+| **`activity_logs`** | System-wide audit trail recording actions taken by both admins and employees (along with timestamps and IP addresses). |
+| **`system_settings`** | Global dynamic configuration (e.g., office geolocation, leave limits, workday timings). |
+| **`notifications`** | Published office announcements, alerts, and holiday closures. |
 
 ## Data Flow Diagram (DFD)
 
