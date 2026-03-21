@@ -70,6 +70,63 @@ Upon initializing the database for the first time, a default administrator accou
 
 > **Note:** It is highly recommended to change the admin password or create a new admin account and deactivate the default one before using this in production.
 
+## Database Schema
+
+The SQLite database (`company.db`) consists of several interconnected tables mapped to the system's logic:
+
+- **`employees`**: Core employee profile details (`emp_code`, `full_name`, `department_id`, `role_id`, `status`, `profile_image`, etc.)
+- **`users`**: Employee portal login credentials, hashed passwords, and session data.
+- **`admin_users`**: Administrator login credentials and profiles.
+- **`departments` & `roles`**: Lookup tables defining the organizational structure.
+- **`attendance`**: Daily check-in/out records, work hours, late flags, and attendance statuses.
+- **`leave_requests`**: Employee leave applications, date ranges, reasons, and admin approval tracking.
+- **`employee_hourly_notes`**: Logs of task descriptions submitted by employees throughout their workday.
+- **`activity_logs`**: System-wide audit trail recording actions taken by both admins and employees (along with timestamps and IP addresses).
+- **`system_settings`**: Global dynamic configuration (e.g., office geolocation, leave limits, workday timings).
+- **`notifications`**: Published office announcements, alerts, and holiday closures.
+
+## Data Flow Diagram (DFD)
+
+Below is a high-level (Level 1) Data Flow representation of the entire HR Management System:
+
+```mermaid
+graph TD
+    %% External Entities
+    EMP([Employee])
+    ADM([Administrator])
+
+    %% Data Store
+    DB[(SQLite Database)]
+
+    %% Core Processes
+    AUTH[Authentication System]
+    ATT[Attendance & Geofencing]
+    LEAVE[Leave Management]
+    TASK[Hourly Task Logging]
+    HR[Employee & Policy Management]
+    REP[Reporting & Dashboard]
+
+    %% Employee Data Flow
+    EMP <-->|Login Credentials / Session| AUTH
+    EMP -->|Location Data + Action| ATT
+    EMP <-->|Leave Applications & Status| LEAVE
+    EMP -->|Hourly Activity Notes| TASK
+
+    %% Admin Data Flow
+    ADM <-->|Login Credentials / Session| AUTH
+    ADM -->|Approve/Reject Requests| LEAVE
+    ADM <-->|Create/Edit Users & Settings| HR
+    ADM <-->|Request & View Analytics| REP
+
+    %% Interaction with Data Store
+    AUTH <-->|Validate Hash| DB
+    ATT <-->|Check/Write Timestamps| DB
+    LEAVE <-->|Update Status| DB
+    TASK -->|Save Work Logs| DB
+    HR <-->|Update Settings & Profiles| DB
+    DB -->|Fetch Summaries & Activity| REP
+```
+
 ## Project Structure
 
 - `app.py`: Main Flask application containing all routing logic.
