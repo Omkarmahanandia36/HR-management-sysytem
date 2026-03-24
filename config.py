@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = str(BASE_DIR / os.environ.get("HRMS_DB_NAME", "company.db"))
+DB_PATH = str(BASE_DIR / os.environ.get("HRMS_DB_NAME", "database.db"))
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "hr-management-dev-secret")
 
 DEFAULT_SYSTEM_SETTINGS = {

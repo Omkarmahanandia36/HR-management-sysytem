@@ -52,7 +52,7 @@ A robust, Flask-based HR Management System featuring dedicated portals for both 
    ```bash
    python database.py
    ```
-   This will create a `company.db` file in the root directory.
+   This will create a `database.db` file in the root directory.
 
 4. **Run the Application:**
    ```bash
@@ -72,7 +72,7 @@ Upon initializing the database for the first time, a default administrator accou
 
 ## Database Schema
 
-The SQLite database (`company.db`) consists of several interconnected tables mapped to the system's logic:
+The SQLite database (`database.db`) consists of several interconnected tables mapped to the system's logic:
 
 | Table Name | Description |
 | :--- | :--- |
