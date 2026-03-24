@@ -1,3 +1,4 @@
+import os
 from werkzeug.security import generate_password_hash
 
 from config import DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_NAME, DEFAULT_ADMIN_PASSWORD
@@ -30,6 +31,9 @@ def ensure_users_table(conn):
 
 
 
+import os
+from werkzeug.security import generate_password_hash
+
 def ensure_admin_users_table(conn):
     conn.execute(
         """
@@ -44,21 +48,46 @@ def ensure_admin_users_table(conn):
         """
     )
 
-    admin_count = conn.execute("SELECT COUNT(*) FROM admin_users").fetchone()[0]
-    if admin_count == 0:
-        conn.execute(
-            """
-            INSERT INTO admin_users (full_name, email, password_hash, is_active, last_login)
-            VALUES (?, ?, ?, 1, NULL)
-            """,
-            (
-                DEFAULT_ADMIN_NAME,
-                DEFAULT_ADMIN_EMAIL,
-                generate_password_hash(DEFAULT_ADMIN_PASSWORD),
-            ),
-        )
-        conn.commit()
+    DEFAULT_ADMINS = [
+        {
+            "full_name": os.environ.get("ADMIN1_NAME", "Omkar Mahanandia"),
+            "email": os.environ.get("ADMIN1_EMAIL", "omkaroditech@gmail.com"),
+            "password": os.environ.get("ADMIN1_PASSWORD", "omkar@oditech"),
+        },
+        {
+            "full_name": os.environ.get("ADMIN2_NAME", "Prabhu Devendra Rao"),
+            "email": os.environ.get("ADMIN2_EMAIL", "cma.ceo@gmail.com"),
+            "password": os.environ.get("ADMIN2_PASSWORD", "CEO_CMA@oditech"),
+        },
+        {
+            "full_name": os.environ.get("ADMIN3_NAME", "Human Resource Executive"),
+            "email": os.environ.get("ADMIN3_EMAIL", "oditech.HR@gmail.com"),
+            "password": os.environ.get("ADMIN3_PASSWORD", "HR_oditech@48"),
+        },
+    ]
 
+    for admin in DEFAULT_ADMINS:
+        if not admin["email"]:
+            continue
+
+        existing = conn.execute(
+            "SELECT id FROM admin_users WHERE email = ?", (admin["email"],)
+        ).fetchone()
+
+        if not existing:
+            conn.execute(
+                """
+                INSERT INTO admin_users (full_name, email, password_hash, is_active, last_login)
+                VALUES (?, ?, ?, 1, NULL)
+                """,
+                (
+                    admin["full_name"],
+                    admin["email"],
+                    generate_password_hash(admin["password"]),
+                ),
+            )
+
+    conn.commit()
 
 
 def ensure_employee_profile_columns(conn):

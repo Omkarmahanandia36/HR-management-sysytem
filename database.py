@@ -14,6 +14,7 @@ def create_database(db_path=DB_PATH):
     cursor = conn.cursor()
 
     cursor.execute("PRAGMA foreign_keys = ON;")
+    cursor.execute("PRAGMA journal_mode=WAL;")
 
     cursor.execute(
         """
