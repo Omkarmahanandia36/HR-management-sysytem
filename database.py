@@ -24,6 +24,10 @@ def create_database(db_path=DB_PATH):
         """
     )
 
+    default_departments = ["Sales", "Digital Marketing", "Engineering", "Creative"]
+    for dept in default_departments:
+        cursor.execute("INSERT OR IGNORE INTO departments (dept_name) VALUES (?);", (dept,))
+
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS roles (
@@ -233,4 +237,3 @@ def create_database(db_path=DB_PATH):
 
 if __name__ == "__main__":
     create_database()
-

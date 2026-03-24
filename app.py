@@ -471,19 +471,19 @@ def next_emp_code(conn):
         """
         SELECT emp_code
         FROM employees
-        WHERE emp_code LIKE 'EMP%'
-        ORDER BY CAST(SUBSTR(emp_code, 4) AS INTEGER) DESC
+        WHERE emp_code LIKE 'OG%'
+        ORDER BY CAST(SUBSTR(emp_code, 3) AS INTEGER) DESC
         LIMIT 1
         """
     ).fetchone()
     if not row or not row["emp_code"]:
-        return "EMP001"
+        return "OG2517"
 
     code = row["emp_code"]
-    suffix = code[3:]
+    suffix = code[2:]
     if not suffix.isdigit():
-        return "EMP001"
-    return f"EMP{int(suffix) + 1:03d}"
+        return "OG2517"
+    return f"OG{int(suffix) + 1}"
 
 
 HALF_DAY_STATUS_VALUES = {"half day", "half-day", "halfday", "half_day"}
@@ -1826,6 +1826,12 @@ def admin_dashboard():
 def employee_management():
     conn = get_db_connection()
     ensure_users_table(conn)
+
+    default_departments = ["Sales", "Digital Marketing", "Engineering", "Creative"]
+    for dept in default_departments:
+        conn.execute("INSERT OR IGNORE INTO departments (dept_name) VALUES (?)", (dept,))
+    conn.commit()
+
     query = request.args.get("q", "").strip()
     edit_id = request.args.get("edit_id", type=int)
     message = request.args.get("msg", "").strip()
@@ -2021,6 +2027,7 @@ def add_employee():
 @app.route("/admin/employees/<int:employee_id>/edit", methods=["POST"])
 def edit_employee(employee_id):
     full_name = request.form.get("full_name", "").strip()
+    emp_code = request.form.get("emp_code", "").strip()
     email = request.form.get("email", "").strip()
     phone = request.form.get("phone", "").strip()
     join_date = request.form.get("join_date", "").strip()
@@ -2074,11 +2081,15 @@ def edit_employee(employee_id):
         conn.close()
         return redirect(url_for("employee_management", msg="Employee not found."))
 
+    if not emp_code:
+        emp_code = row["emp_code"]
+
     try:
         conn.execute(
             """
             UPDATE employees
             SET
+                emp_code = ?,
                 full_name = ?,
                 department_id = ?,
                 role_id = ?,
@@ -2089,6 +2100,7 @@ def edit_employee(employee_id):
             WHERE id = ?
             """,
             (
+                emp_code,
                 full_name,
                 department_id,
                 role_id,
@@ -2107,7 +2119,7 @@ def edit_employee(employee_id):
                 """,
                 (
                     employee_id,
-                    f"Employee portal password updated: {full_name} ({row['emp_code']})",
+                    f"Employee portal password updated: {full_name} ({emp_code})",
                     request.remote_addr,
                 ),
             )
@@ -2118,7 +2130,7 @@ def edit_employee(employee_id):
             """,
             (
                 employee_id,
-                f"Employee updated: {row['full_name']} ({row['emp_code']})",
+                f"Employee updated: {full_name} ({emp_code})",
                 request.remote_addr,
             ),
         )
@@ -2130,7 +2142,7 @@ def edit_employee(employee_id):
             url_for(
                 "employee_management",
                 edit_id=employee_id,
-                msg="This email is already linked to another portal login. Use a different email or clear it first.",
+                msg="This email or employee code is already in use by another employee. Please use a different one.",
             )
         )
 

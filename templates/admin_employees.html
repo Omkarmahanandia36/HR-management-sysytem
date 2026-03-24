@@ -70,7 +70,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
             <div class="custom-input-group">
                 <label>Employee Code</label>
-                <input type="text" name="emp_code" value="{{ edit_employee.emp_code if edit_employee else new_emp_code }}" {% if edit_employee %}readonly style="background-color: #e9ecef; cursor: not-allowed;"{% endif %}>
+                <input type="text" name="emp_code" value="{{ edit_employee.emp_code if edit_employee else new_emp_code }}">
             </div>
             <div class="custom-input-group">
                 <label>Full Name</label>
