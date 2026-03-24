@@ -3,7 +3,13 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = str(BASE_DIR / os.environ.get("HRMS_DB_NAME", "database.db"))
+
+# Railway persistent volume path
+PERSISTENT_DIR = Path(os.environ.get("RAILWAY_VOLUME_MOUNT_PATH", str(BASE_DIR)))
+
+# Database path
+DB_PATH = str(PERSISTENT_DIR / os.environ.get("HRMS_DB_NAME", "database.db"))
+
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "hr-management-dev-secret")
 
 DEFAULT_SYSTEM_SETTINGS = {
@@ -23,6 +29,9 @@ DEFAULT_ADMIN_EMAIL = os.environ.get("DEFAULT_ADMIN_EMAIL", "admin@company.com")
 DEFAULT_ADMIN_PASSWORD = os.environ.get("DEFAULT_ADMIN_PASSWORD", "Admin@123")
 
 PROFILE_IMAGE_UPLOAD_SUBDIR = os.path.join("uploads", "profile_pics")
-PROFILE_IMAGE_UPLOAD_DIR = str(BASE_DIR / "static" / "uploads" / "profile_pics")
+
+# Profile images also stored in persistent volume
+PROFILE_IMAGE_UPLOAD_DIR = str(PERSISTENT_DIR / "static" / "uploads" / "profile_pics")
+
 ALLOWED_PROFILE_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
