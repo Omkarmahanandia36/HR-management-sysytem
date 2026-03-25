@@ -66,8 +66,16 @@ def ensure_admin_users_table(conn):
         if not admin["email"]:
             continue
 
+        conn.execute(
+            """
+            UPDATE admin_users 
+            SET email = REPLACE(REPLACE(email, char(10), ''), char(13), ''),
+                full_name = REPLACE(REPLACE(full_name, char(10), ''), char(13), '')
+            """
+        )
+
         existing = conn.execute(
-            "SELECT id FROM admin_users WHERE TRIM(LOWER(email)) = LOWER(?)",
+            "SELECT id FROM admin_users WHERE REPLACE(LOWER(email), char(10), '') = LOWER(?)",
             (admin["email"].strip(),)
         ).fetchone()
 
@@ -84,25 +92,24 @@ def ensure_admin_users_table(conn):
                 ),
             )
         else:
-            # Always update password hash and trim stored email
             conn.execute(
                 """
                 UPDATE admin_users 
                 SET password_hash = ?,
                     full_name = ?,
-                    email = TRIM(email),
+                    email = ?,
                     is_active = 1
-                WHERE TRIM(LOWER(email)) = LOWER(?)
+                WHERE REPLACE(LOWER(email), char(10), '') = LOWER(?)
                 """,
                 (
                     generate_password_hash(admin["password"].strip()),
                     admin["full_name"].strip(),
                     admin["email"].strip(),
+                    admin["email"].strip(),
                 ),
             )
 
     conn.commit()
-
 
 def ensure_employee_profile_columns(conn):
     employee_columns = {
