@@ -901,6 +901,14 @@ def debug_admins():
     return str([dict(a) for a in admins])
 
 
+@app.route("/debug-employees")
+def debug_employees():
+    conn = get_db_connection()
+    rows = conn.execute("SELECT id, emp_code, full_name, email FROM employees").fetchall()
+    conn.close()
+    return str([dict(r) for r in rows])
+
+
 @app.route("/fix-admins")
 def fix_admins():
     import sqlite3
