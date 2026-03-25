@@ -136,4 +136,4 @@ graph TD
 - `database.py`: Database initialization script.
 - `modules/`: Contains modularized backend logic for authentication (`admin_auth.py`, `employee_auth.py`) and database schema helpers (`schema.py`).
 - `templates/`: Jinja2 HTML templates for the frontend.
-- `static/`: Static assets (CSS, JS, Uploaded Profile Pictures).
+- `static/`: Static assets (CSS, JS, Uploaded Profile Pictures)!
