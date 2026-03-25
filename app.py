@@ -35,6 +35,9 @@ from modules.auth import (
 from modules.db import ensure_employee_hourly_notes_table, ensure_employee_profile_columns
 
 app = Flask(__name__)
+from database import create_database
+create_database()
+
 app.secret_key = FLASK_SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = MAX_PROFILE_IMAGE_SIZE
 
