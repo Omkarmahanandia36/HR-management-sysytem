@@ -30,10 +30,6 @@ def ensure_users_table(conn):
     )
 
 
-
-import os
-from werkzeug.security import generate_password_hash
-
 def ensure_admin_users_table(conn):
     conn.execute(
         """
@@ -71,19 +67,36 @@ def ensure_admin_users_table(conn):
             continue
 
         existing = conn.execute(
-            "SELECT id FROM admin_users WHERE email = ?", (admin["email"],)
+            "SELECT id FROM admin_users WHERE LOWER(email) = LOWER(?)",
+            (admin["email"],)
         ).fetchone()
 
         if not existing:
             conn.execute(
                 """
-                INSERT INTO admin_users (full_name, email, password_hash, is_active, last_login)
-                VALUES (?, ?, ?, 1, NULL)
+                INSERT INTO admin_users (full_name, email, password_hash, is_active)
+                VALUES (?, ?, ?, 1)
                 """,
                 (
                     admin["full_name"],
                     admin["email"],
                     generate_password_hash(admin["password"]),
+                ),
+            )
+        else:
+            # Always update password hash on startup ← KEY FIX
+            conn.execute(
+                """
+                UPDATE admin_users 
+                SET password_hash = ?,
+                    full_name = ?,
+                    is_active = 1
+                WHERE LOWER(email) = LOWER(?)
+                """,
+                (
+                    generate_password_hash(admin["password"]),
+                    admin["full_name"],
+                    admin["email"],
                 ),
             )
 
@@ -105,7 +118,6 @@ def ensure_employee_profile_columns(conn):
         conn.commit()
 
 
-
 def ensure_employee_hourly_notes_table(conn):
     conn.execute(
         """
@@ -124,7 +136,6 @@ def ensure_employee_hourly_notes_table(conn):
         )
         """
     )
-    # Add status column if it doesn't exist
     existing_columns = {
         row[1] for row in conn.execute("PRAGMA table_info(employee_hourly_notes)").fetchall()
     }
