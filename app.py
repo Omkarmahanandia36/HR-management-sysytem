@@ -37,7 +37,6 @@ from modules.db import ensure_employee_hourly_notes_table, ensure_employee_profi
 app = Flask(__name__)
 from database import create_database
 create_database()
-
 app.secret_key = FLASK_SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = MAX_PROFILE_IMAGE_SIZE
 
@@ -894,6 +893,13 @@ def employee_dashboard(employee_slug):
         last_day_pending_work=last_day_pending_work,
     )
 
+@app.route('/debug-admins')
+def debug_admins():
+    conn = get_db_connection()
+    admins = conn.execute("SELECT id, full_name, email FROM admin_users").fetchall()
+    conn.close()
+    return str([dict(a) for a in admins])
+
 
 @app.route("/<employee_slug>/profile")
 @employee_login_required(get_db_connection)
@@ -1474,7 +1480,6 @@ def employee_apply_leave(employee_slug):
                             total_days,
                             form_state["leave_type"],
                             form_state["reason"],
-                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             get_ist_now().strftime("%Y-%m-%d %H:%M:%S"),
                         ),
                     )
@@ -3135,7 +3140,6 @@ def save_system_settings():
         (
             None,
             "Updated system settings",
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             get_ist_now().strftime("%Y-%m-%d %H:%M:%S"),
             request.remote_addr,
         ),
@@ -3183,7 +3187,6 @@ def add_notification():
             notification_form["message"],
             notification_form["notice_date"],
             1 if notification_form["office_closed"] else 0,
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             get_ist_now().strftime("%Y-%m-%d %H:%M:%S"),
         ),
     )
@@ -3195,7 +3198,6 @@ def add_notification():
         (
             None,
             "Published office notification",
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             get_ist_now().strftime("%Y-%m-%d %H:%M:%S"),
             request.remote_addr,
         ),
@@ -3238,7 +3240,6 @@ def toggle_notification(notification_id):
         (
             None,
             "Archived office notification" if notification["is_active"] else "Reactivated office notification",
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             get_ist_now().strftime("%Y-%m-%d %H:%M:%S"),
             request.remote_addr,
         ),
