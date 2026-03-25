@@ -1,8 +1,6 @@
 import os
 from werkzeug.security import generate_password_hash
 
-from config import DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_NAME, DEFAULT_ADMIN_PASSWORD
-
 EMPLOYEE_PROFILE_COLUMNS = {
     "profile_image": "TEXT",
     "address": "TEXT",
@@ -68,60 +66,37 @@ def ensure_admin_users_table(conn):
 
         conn.execute(
             """
-            UPDATE admin_users 
-            SET email = REPLACE(REPLACE(email, char(10), ''), char(13), ''),
-                full_name = REPLACE(REPLACE(full_name, char(10), ''), char(13), '')
-            """
+            INSERT INTO admin_users (full_name, email, password_hash, is_active)
+            VALUES (?, ?, ?, 1)
+            ON CONFLICT(email) DO UPDATE SET
+                full_name = excluded.full_name,
+                password_hash = excluded.password_hash,
+                is_active = 1
+            """,
+            (
+                admin["full_name"],
+                admin["email"],
+                generate_password_hash(admin["password"]),
+            ),
         )
 
-        existing = conn.execute(
-            "SELECT id FROM admin_users WHERE REPLACE(LOWER(email), char(10), '') = LOWER(?)",
-            (admin["email"].strip(),)
-        ).fetchone()
-
-        if not existing:
-            conn.execute(
-                """
-                INSERT INTO admin_users (full_name, email, password_hash, is_active)
-                VALUES (?, ?, ?, 1)
-                """,
-                (
-                    admin["full_name"].strip(),
-                    admin["email"].strip(),
-                    generate_password_hash(admin["password"].strip()),
-                ),
-            )
-        else:
-            conn.execute(
-                """
-                UPDATE admin_users 
-                SET password_hash = ?,
-                    full_name = ?,
-                    email = ?,
-                    is_active = 1
-                WHERE REPLACE(LOWER(email), char(10), '') = LOWER(?)
-                """,
-                (
-                    generate_password_hash(admin["password"].strip()),
-                    admin["full_name"].strip(),
-                    admin["email"].strip(),
-                    admin["email"].strip(),
-                ),
-            )
-
     conn.commit()
+
 
 def ensure_employee_profile_columns(conn):
     employee_columns = {
         row[1] for row in conn.execute("PRAGMA table_info(employees)").fetchall()
     }
+
     missing_columns = [
         (column_name, column_type)
         for column_name, column_type in EMPLOYEE_PROFILE_COLUMNS.items()
         if column_name not in employee_columns
     ]
+
     for column_name, column_type in missing_columns:
         conn.execute(f"ALTER TABLE employees ADD COLUMN {column_name} {column_type}")
+
     if missing_columns:
         conn.commit()
 
@@ -144,9 +119,13 @@ def ensure_employee_hourly_notes_table(conn):
         )
         """
     )
+
     existing_columns = {
-        row[1] for row in conn.execute("PRAGMA table_info(employee_hourly_notes)").fetchall()
+        row[1] for row in conn.execute(
+            "PRAGMA table_info(employee_hourly_notes)"
+        ).fetchall()
     }
+
     if "status" not in existing_columns:
         conn.execute("ALTER TABLE employee_hourly_notes ADD COLUMN status TEXT")
         conn.commit()
