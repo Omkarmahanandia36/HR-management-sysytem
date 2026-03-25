@@ -903,18 +903,29 @@ def debug_admins():
 
 @app.route("/fix-admins")
 def fix_admins():
-    conn = get_db_connection()
-    conn.execute(
-        """
+    import sqlite3
+    from config import DB_PATH
+
+    conn = sqlite3.connect(DB_PATH)
+
+    # 1. Delete the rows containing newline characters
+    conn.execute("""
+        DELETE FROM admin_users
+        WHERE email LIKE '%\n%' OR email LIKE '%\r%'
+    """)
+
+    # 2. Clean remaining rows just in case
+    conn.execute("""
         UPDATE admin_users
         SET
             email = TRIM(REPLACE(REPLACE(email, char(10), ''), char(13), '')),
             full_name = TRIM(REPLACE(REPLACE(full_name, char(10), ''), char(13), ''))
-        """
-    )
+    """)
+
     conn.commit()
     conn.close()
-    return "Admins cleaned"
+
+    return "Admins cleaned successfully"
 
 
 @app.route("/<employee_slug>/profile")
