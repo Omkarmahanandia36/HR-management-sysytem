@@ -45,22 +45,22 @@ def ensure_admin_users_table(conn):
     )
 
     DEFAULT_ADMINS = [
-        {
-            "full_name": os.environ.get("ADMIN1_NAME", "Omkar Mahanandia"),
-            "email": os.environ.get("ADMIN1_EMAIL", "omkaroditech@gmail.com"),
-            "password": os.environ.get("ADMIN1_PASSWORD", "omkar@oditech"),
-        },
-        {
-            "full_name": os.environ.get("ADMIN2_NAME", "Prabhu Devendra Rao"),
-            "email": os.environ.get("ADMIN2_EMAIL", "cma.ceo@gmail.com"),
-            "password": os.environ.get("ADMIN2_PASSWORD", "CEO_CMA@oditech"),
-        },
-        {
-            "full_name": os.environ.get("ADMIN3_NAME", "Human Resource Executive"),
-            "email": os.environ.get("ADMIN3_EMAIL", "oditech.HR@gmail.com"),
-            "password": os.environ.get("ADMIN3_PASSWORD", "HR_oditech@48"),
-        },
-    ]
+    {
+        "full_name": os.environ.get("ADMIN1_NAME", "Omkar Mahanandia").strip(),
+        "email": os.environ.get("ADMIN1_EMAIL", "omkaroditech@gmail.com").strip(),
+        "password": os.environ.get("ADMIN1_PASSWORD", "omkar@oditech").strip(),
+    },
+    {
+        "full_name": os.environ.get("ADMIN2_NAME", "Prabhu Devendra Rao").strip(),
+        "email": os.environ.get("ADMIN2_EMAIL", "cma.ceo@gmail.com").strip(),
+        "password": os.environ.get("ADMIN2_PASSWORD", "CEO_CMA@oditech").strip(),
+    },
+    {
+        "full_name": os.environ.get("ADMIN3_NAME", "Human Resource Executive").strip(),
+        "email": os.environ.get("ADMIN3_EMAIL", "oditech.HR@gmail.com").strip(),
+        "password": os.environ.get("ADMIN3_PASSWORD", "HR_oditech@48").strip(),
+    },
+]
 
     for admin in DEFAULT_ADMINS:
         if not admin["email"]:
@@ -136,7 +136,7 @@ def ensure_employee_hourly_notes_table(conn):
         )
         """
     )
-    existing_columns = {
+    existing_columns = 
         row[1] for row in conn.execute("PRAGMA table_info(employee_hourly_notes)").fetchall()
     }
     if "status" not in existing_columns:
