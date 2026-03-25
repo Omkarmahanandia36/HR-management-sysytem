@@ -46,19 +46,19 @@ def ensure_admin_users_table(conn):
 
     DEFAULT_ADMINS = [
         {
-            "full_name": os.environ.get("ADMIN1_NAME", "Omkar Mahanandia"),
-            "email": os.environ.get("ADMIN1_EMAIL", "omkaroditech@gmail.com"),
-            "password": os.environ.get("ADMIN1_PASSWORD", "omkar@oditech"),
+            "full_name": os.environ.get("ADMIN1_NAME", "Omkar Mahanandia").strip(),
+            "email": os.environ.get("ADMIN1_EMAIL", "omkaroditech@gmail.com").strip(),
+            "password": os.environ.get("ADMIN1_PASSWORD", "omkar@oditech").strip(),
         },
         {
-            "full_name": os.environ.get("ADMIN2_NAME", "Prabhu Devendra Rao"),
-            "email": os.environ.get("ADMIN2_EMAIL", "cma.ceo@gmail.com"),
-            "password": os.environ.get("ADMIN2_PASSWORD", "CEO_CMA@oditech"),
+            "full_name": os.environ.get("ADMIN2_NAME", "Prabhu Devendra Rao").strip(),
+            "email": os.environ.get("ADMIN2_EMAIL", "cma.ceo@gmail.com").strip(),
+            "password": os.environ.get("ADMIN2_PASSWORD", "CEO_CMA@oditech").strip(),
         },
         {
-            "full_name": os.environ.get("ADMIN3_NAME", "Human Resource Executive"),
-            "email": os.environ.get("ADMIN3_EMAIL", "oditech.HR@gmail.com"),
-            "password": os.environ.get("ADMIN3_PASSWORD", "HR_oditech@48"),
+            "full_name": os.environ.get("ADMIN3_NAME", "Human Resource Executive").strip(),
+            "email": os.environ.get("ADMIN3_EMAIL", "oditech.HR@gmail.com").strip(),
+            "password": os.environ.get("ADMIN3_PASSWORD", "HR_oditech@48").strip(),
         },
     ]
 
@@ -67,8 +67,8 @@ def ensure_admin_users_table(conn):
             continue
 
         existing = conn.execute(
-            "SELECT id FROM admin_users WHERE LOWER(email) = LOWER(?)",
-            (admin["email"],)
+            "SELECT id FROM admin_users WHERE TRIM(LOWER(email)) = LOWER(?)",
+            (admin["email"].strip(),)
         ).fetchone()
 
         if not existing:
@@ -78,25 +78,26 @@ def ensure_admin_users_table(conn):
                 VALUES (?, ?, ?, 1)
                 """,
                 (
-                    admin["full_name"],
-                    admin["email"],
-                    generate_password_hash(admin["password"]),
+                    admin["full_name"].strip(),
+                    admin["email"].strip(),
+                    generate_password_hash(admin["password"].strip()),
                 ),
             )
         else:
-            # Always update password hash on startup ← KEY FIX
+            # Always update password hash and trim stored email
             conn.execute(
                 """
                 UPDATE admin_users 
                 SET password_hash = ?,
                     full_name = ?,
+                    email = TRIM(email),
                     is_active = 1
-                WHERE LOWER(email) = LOWER(?)
+                WHERE TRIM(LOWER(email)) = LOWER(?)
                 """,
                 (
-                    generate_password_hash(admin["password"]),
-                    admin["full_name"],
-                    admin["email"],
+                    generate_password_hash(admin["password"].strip()),
+                    admin["full_name"].strip(),
+                    admin["email"].strip(),
                 ),
             )
 
