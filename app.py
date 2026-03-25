@@ -901,6 +901,22 @@ def debug_admins():
     return str([dict(a) for a in admins])
 
 
+@app.route("/fix-admins")
+def fix_admins():
+    conn = get_db_connection()
+    conn.execute(
+        """
+        UPDATE admin_users
+        SET
+            email = TRIM(REPLACE(REPLACE(email, char(10), ''), char(13), '')),
+            full_name = TRIM(REPLACE(REPLACE(full_name, char(10), ''), char(13), ''))
+        """
+    )
+    conn.commit()
+    conn.close()
+    return "Admins cleaned"
+
+
 @app.route("/<employee_slug>/profile")
 @employee_login_required(get_db_connection)
 def employee_profile(employee_slug):
