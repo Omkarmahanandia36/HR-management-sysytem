@@ -8,7 +8,7 @@ from flask import Flask, redirect, render_template, request, send_file, session,
 from werkzeug.utils import secure_filename
 from config import (
     ALLOWED_PROFILE_IMAGE_EXTENSIONS,
-    DB_PATH,
+    # DB_PATH,
     DEFAULT_SYSTEM_SETTINGS,
     FLASK_SECRET_KEY,
     MAX_PROFILE_IMAGE_SIZE,
