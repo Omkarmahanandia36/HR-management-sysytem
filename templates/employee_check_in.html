@@ -25,23 +25,19 @@
     </div>
 
     <div class="button-row" style="display: flex; gap: 1rem;">
-        {% if can_check_in %}
         <form method="post" action="{{ url_for('employee_check_in', employee_slug=employee_slug) }}" style="flex: 1;">
             <input type="hidden" name="attendance_action" value="check_in">
             <input type="hidden" name="latitude" id="latitude_checkin">
             <input type="hidden" name="longitude" id="longitude_checkin">
-            <button type="submit" id="checkin_btn" class="employee-action-btn" style="width: 100%;" disabled>Check In Now</button>
+            <button type="submit" id="checkin_btn" class="employee-action-btn" style="width: 100%;" data-allowed="{{ '1' if can_check_in else '0' }}" disabled>Check In Now</button>
         </form>
-        {% endif %}
 
-        {% if can_check_out %}
         <form method="post" action="{{ url_for('employee_check_in', employee_slug=employee_slug) }}" style="flex: 1;">
             <input type="hidden" name="attendance_action" value="check_out">
             <input type="hidden" name="latitude" id="latitude_checkout">
             <input type="hidden" name="longitude" id="longitude_checkout">
-            <button type="submit" id="checkout_btn" class="employee-action-btn secondary" style="width: 100%;" disabled>Check Out Now</button>
+            <button type="submit" id="checkout_btn" class="employee-action-btn secondary" style="width: 100%;" data-allowed="{{ '1' if can_check_out else '0' }}" disabled>Check Out Now</button>
         </form>
-        {% endif %}
     </div>
 </div>
 
@@ -70,8 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 setLocationStatus('Location acquired. You can now check in or out.', false);
                 document.querySelectorAll('input[name="latitude"]').forEach(el => el.value = latitude);
                 document.querySelectorAll('input[name="longitude"]').forEach(el => el.value = longitude);
-                if (checkinBtn) checkinBtn.disabled = false;
-                if (checkoutBtn) checkoutBtn.disabled = false;
+                if (checkinBtn && checkinBtn.dataset.allowed === '1') checkinBtn.disabled = false;
+                if (checkoutBtn && checkoutBtn.dataset.allowed === '1') checkoutBtn.disabled = false;
             },
             () => {
                 setLocationStatus('Unable to retrieve your location. Please enable location services in your browser and device settings.', true);

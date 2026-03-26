@@ -1135,6 +1135,7 @@ def employee_check_in(employee_slug):
     ).fetchone()
 
     if request.method == "POST":
+        attendance_action = request.form.get("attendance_action", "check_in").strip().lower()
         settings = load_system_settings(conn)
         office_lat_str = settings.get("office_latitude", "0.0")
         office_lon_str = settings.get("office_longitude", "0.0")
@@ -1148,7 +1149,8 @@ def employee_check_in(employee_slug):
             office_lat, office_lon, allowed_radius = 0.0, 0.0, 500
 
         # Only enforce geofence if office location is set (not 0,0)
-        if office_lat != 0.0 or office_lon != 0.0:
+        # Check-out is allowed from anywhere.
+        if attendance_action != "check_out" and (office_lat != 0.0 or office_lon != 0.0):
             user_lat_str = request.form.get("latitude")
             user_lon_str = request.form.get("longitude")
 
@@ -1167,10 +1169,11 @@ def employee_check_in(employee_slug):
 
             if distance > allowed_radius:
                 conn.close()
-                msg = f"You are {int(distance)} meters away. You must be within {allowed_radius} meters to check in/out."
+                msg = (
+                    f"You are {int(distance)} meters away. You must be within {allowed_radius} meters to "
+                    "check in."
+                )
                 return redirect(url_for("employee_check_in", employee_slug=employee_slug, msg=msg))
-
-        attendance_action = request.form.get("attendance_action", "check_in").strip().lower()
         status_value = (today_record["status"] if today_record else "") or ""
         status_lower = status_value.strip().lower()
         if status_lower in ("leave", "holiday"):
