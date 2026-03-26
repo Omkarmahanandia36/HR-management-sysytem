@@ -39,6 +39,8 @@ from database import create_database
 create_database()
 app.secret_key = FLASK_SECRET_KEY
 app.config["MAX_CONTENT_LENGTH"] = MAX_PROFILE_IMAGE_SIZE
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=6)
+app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 
 def get_ist_now():

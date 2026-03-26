@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 from functools import wraps
 
 from flask import redirect, session, url_for
@@ -11,6 +12,7 @@ EMPLOYEE_SESSION_KEYS = (
     "employee_name",
     "employee_emp_code",
     "employee_slug",
+    "employee_login_at",
 )
 
 
@@ -29,10 +31,12 @@ def build_employee_slug(full_name):
 
 def start_employee_session(auth_row):
     clear_employee_session()
+    session.permanent = True
     session["employee_id"] = auth_row["employee_id"]
     session["employee_name"] = auth_row["full_name"]
     session["employee_emp_code"] = auth_row["emp_code"]
     session["employee_slug"] = build_employee_slug(auth_row["full_name"])
+    session["employee_login_at"] = datetime.utcnow().isoformat()
 
 
 
@@ -123,6 +127,27 @@ def employee_login_required(get_db_connection):
             if not employee_id:
                 return redirect(
                     url_for("login", msg="Please sign in to access the employee portal.")
+                )
+
+            login_at = session.get("employee_login_at")
+            if not login_at:
+                clear_employee_session()
+                return redirect(
+                    url_for("login", msg="Session expired after 6 days. Please sign in again.")
+                )
+
+            try:
+                login_at_dt = datetime.fromisoformat(login_at)
+            except (TypeError, ValueError):
+                clear_employee_session()
+                return redirect(
+                    url_for("login", msg="Session expired after 6 days. Please sign in again.")
+                )
+
+            if datetime.utcnow() - login_at_dt > timedelta(days=6):
+                clear_employee_session()
+                return redirect(
+                    url_for("login", msg="Session expired after 6 days. Please sign in again.")
                 )
 
             conn = get_db_connection()

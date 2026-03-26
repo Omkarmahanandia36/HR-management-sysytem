@@ -779,6 +779,7 @@ body {
     background: #ffffff;
     border: 1px solid rgba(203, 213, 225, 0.72);
     box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+    min-width: 0;
 }
 
 .employee-quick-card::before,
@@ -830,6 +831,9 @@ body {
     margin-top: 10px;
     font-size: 1.5rem;
     color: var(--ink-900);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .employee-quick-card small {
@@ -856,6 +860,7 @@ body {
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
     text-align: left;
     overflow: hidden;
+    min-width: 0;
 }
 
 .employee-attendance-metric::before {
@@ -1082,6 +1087,54 @@ body {
     }
 }
 
+@media (max-width: 720px) {
+    .employee-portal-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .employee-portal-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .employee-stat-grid,
+    .employee-action-grid,
+    .employee-info-list,
+    .employee-profile-meta-grid,
+    .hourly-schedule-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .employee-profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .employee-hero-card,
+    .employee-form-card,
+    .employee-profile-card {
+        padding: 16px;
+    }
+
+    .employee-portal-shell {
+        padding: 20px;
+    }
+
+    .button-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-row form {
+        width: 100%;
+    }
+
+    .button-row .employee-action-btn {
+        width: 100%;
+    }
+}
+
 @media (max-width: 560px) {
     .employee-portal-body {
         padding: 16px;
@@ -1099,6 +1152,10 @@ body {
 
     .employee-attendance-strip {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .employee-table {
+        min-width: 520px;
     }
 }
 
@@ -1509,8 +1566,9 @@ body {
     color: var(--ink-900);
     line-height: 1.45;
     font-size: 1rem;
-    overflow-wrap: break-word;
-    word-break: normal;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .employee-info-list {
@@ -1529,6 +1587,7 @@ body {
     border-radius: 16px;
     background: #f8fafc;
     border: 1px solid rgba(226, 232, 240, 0.95);
+    min-width: 0;
 }
 
 .employee-info-list .employee-info-wide {
@@ -1553,6 +1612,9 @@ body {
     margin-top: 8px;
     color: var(--ink-900);
     line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .employee-text-link {

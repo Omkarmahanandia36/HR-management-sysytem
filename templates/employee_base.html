@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page_title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-        // If this tab was newly opened or closed and reopened, session storage is cleared.
-        // We immediately force a server logout to completely secure the employee portal.
-        if (!sessionStorage.getItem('employee_tab_session')) {
-            window.location.replace("{{ url_for('logout') }}");
-        }
-    </script>
 </head>
 <body class="employee-portal-body">
     <div class="employee-portal-shell">
