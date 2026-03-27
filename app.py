@@ -75,6 +75,7 @@ def inject_auth_context():
         "admin_authenticated": bool(session.get("admin_user_id")),
         "employee_authenticated": bool(session.get("employee_id")),
         "current_employee_initials": employee_initials,
+        "latest_notice_id": session.get("latest_notice_id", 0),
     }
 
 
@@ -224,6 +225,23 @@ def build_notification_card(row, reference_date):
         "created_on": row["created_on"],
         "day_label": day_label,
     }
+
+
+def get_latest_notice_id(conn, reference_date=None):
+    ensure_notifications_table(conn)
+    reference = reference_date or get_ist_date()
+    row = conn.execute(
+        """
+        SELECT id
+        FROM notifications
+        WHERE is_active = 1
+          AND notice_date >= ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (reference.isoformat(),),
+    ).fetchone()
+    return row["id"] if row else 0
 
 
 def load_notifications(conn, include_inactive=False, reference_date=None):
@@ -675,6 +693,8 @@ def resolve_employee_portal_context(expected_slug=""):
         return None, None, None, redirect(
             url_for("employee_dashboard", employee_slug=employee_slug)
         )
+
+    session["latest_notice_id"] = get_latest_notice_id(conn)
 
     return conn, current_employee, employee_slug, None
 
