@@ -26,6 +26,26 @@ A robust, Flask-based HR Management System featuring dedicated portals for both 
 - **Activity Logs**: Audit trail of administrative and user actions across the system.
 - **Backup & Export**: Export monthly attendance reports to CSV format.
 
+## Screenshots
+
+### Employee Dashboard
+![Employee Dashboard](static/images/employee-dashboard.png)
+
+### Admin Dashboard
+![Admin Dashboard](static/images/admin-dashboard.png)
+
+### Attendance Tracking
+![Attendance Tracking](static/images/attendance-tracking.png)
+
+### Leave Management
+![Leave Management](static/images/leave-management.png)
+
+### Geofenced Check-in
+![Geofenced Check-in](static/images/geofenced-checkin.png)
+
+### System Settings
+![System Settings](static/images/system-settings.png)
+
 ## Tech Stack
 
 - **Backend**: Python, Flask
@@ -136,4 +156,4 @@ graph TD
 - `database.py`: Database initialization script.
 - `modules/`: Contains modularized backend logic for authentication (`admin_auth.py`, `employee_auth.py`) and database schema helpers (`schema.py`).
 - `templates/`: Jinja2 HTML templates for the frontend.
-- `static/`: Static assets (CSS, JS, Uploaded Profile Pictures)!
+- `static/`: Static assets (CSS, JS, Uploaded Profile Pictures, Images).
