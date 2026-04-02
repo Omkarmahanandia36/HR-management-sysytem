@@ -1799,7 +1799,10 @@ def admin_dashboard():
     today = get_ist_date().isoformat()
     report_date = resolve_report_date(conn)
 
-    total_employees = scalar(conn, "SELECT COUNT(*) FROM employees")
+    total_employees = scalar(
+        conn,
+        "SELECT COUNT(*) FROM employees WHERE LOWER(COALESCE(status, 'active')) != 'inactive'",
+    )
     present_today = scalar(
         conn,
         "SELECT COUNT(*) FROM attendance WHERE date = ? AND LOWER(status) = 'present'",
